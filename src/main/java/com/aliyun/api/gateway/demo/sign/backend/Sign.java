@@ -49,16 +49,12 @@ public class Sign {
     private static char LF = '\n';
     //编码
     private static final String ENCODING = "UTF-8";
-    //HTTP Header Accept
-    private static final String HTTP_HEADER_ACCEPT = "Accept";
-    //HTTP Header Content-Type
-    private static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-    //HTTP Header Date
-    private static final String HTTP_HEADER_DATE = "Date";
     //HTTP POST
     private static final String HTTP_METHOD_POST = "post";
     //HTTP PUT
     private static final String HTTP_METHOD_PUT = "put";
+    //HTTP HEADER是否转换成小写（部分WEB容器中接受到的所有HEADER的KEY都是小写）
+    private static final boolean HTTP_HEADER_TO_LOWER_CASE = true;
 
     //签名密钥Map,用于存储多对服务端签名计算密钥,一旦正在使用的密钥泄露,只需要将密钥列表中的其他密钥配置到网关即可进行密钥热替换
     private static Map<String, String> signSecretMap = new HashMap<String, String>();
@@ -121,7 +117,7 @@ public class Sign {
         String stringToSign = buildStringToSign(headersToSign, resourceToSign, httpMethod, bodyMd5);
 
         Mac hmacSha256 = Mac.getInstance(HMAC_SHA256);
-        String secret = signSecretMap.get(headers.get(CA_PROXY_SIGN_SECRET_KEY));
+        String secret = signSecretMap.get(headers.get(HTTP_HEADER_TO_LOWER_CASE ? CA_PROXY_SIGN_SECRET_KEY.toLowerCase() : CA_PROXY_SIGN_SECRET_KEY));
 
         byte[] keyBytes = secret.getBytes(ENCODING);
         hmacSha256.init(new SecretKeySpec(keyBytes, 0, keyBytes.length, HMAC_SHA256));
@@ -201,10 +197,11 @@ public class Sign {
     private static Map<String, String> buildHeadersToSign(Map<String, String> headers) {
         Map<String, String> headersToSignMap = new TreeMap<String, String>();
 
-        String headersToSignString = headers.get(CA_PROXY_SIGN_HEADERS);
+        String headersToSignString = headers.get(HTTP_HEADER_TO_LOWER_CASE ? CA_PROXY_SIGN_HEADERS.toLowerCase() : CA_PROXY_SIGN_HEADERS);
 
         if (headersToSignString != null) {
             for (String headerKey : headersToSignString.split("\\,")) {
+                headerKey = HTTP_HEADER_TO_LOWER_CASE ? headerKey.toLowerCase() : headerKey;
                 headersToSignMap.put(headerKey, headers.get(headerKey));
             }
         }
@@ -224,25 +221,12 @@ public class Sign {
     private static String buildStringToSign(Map<String, String> headers, String resourceToSign, String method, String bodyMd5) {
         StringBuilder sb = new StringBuilder();
         sb.append(method).append(LF);
-        if (headers.get(HTTP_HEADER_ACCEPT) != null) {
-            sb.append(headers.get(HTTP_HEADER_ACCEPT));
-        }
-        sb.append(LF);
         if (StringUtils.isNotBlank(bodyMd5)) {
             sb.append(bodyMd5);
         }
         sb.append(LF);
-        if (headers.get(HTTP_HEADER_CONTENT_TYPE) != null && (HTTP_METHOD_POST.equalsIgnoreCase(method) || HTTP_METHOD_PUT.equalsIgnoreCase(method))) {
-            sb.append(headers.get(HTTP_HEADER_CONTENT_TYPE));
-        }
-        sb.append(LF);
-        if (headers.get(HTTP_HEADER_DATE) != null) {
-            sb.append(headers.get(HTTP_HEADER_DATE));
-        }
-        sb.append(LF);
         sb.append(buildHeaders(headers));
         sb.append(resourceToSign);
-        sb.append(LF);
 
         return sb.toString();
     }
@@ -257,7 +241,7 @@ public class Sign {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, String> e : headers.entrySet()) {
             if (e.getValue() != null) {
-                sb.append(e.getKey()).append(':').append(e.getValue()).append(LF);
+                sb.append(e.getKey().toLowerCase()).append(':').append(e.getValue()).append(LF);
             }
         }
         return sb.toString();
