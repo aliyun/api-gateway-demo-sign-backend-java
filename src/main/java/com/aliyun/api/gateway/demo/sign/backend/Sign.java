@@ -21,6 +21,7 @@ package com.aliyun.api.gateway.demo.sign.backend;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
@@ -145,7 +146,7 @@ public class Sign {
         InputStream inputStream = new ByteArrayInputStream(inputStreamBytes);
         byte[] bodyBytes = IOUtils.toByteArray(inputStream);
         if (bodyBytes != null && bodyBytes.length > 0) {
-            return base64AndMD5(bodyBytes);
+            return base64AndMD5(bodyBytes).trim();
         }
         return null;
     }
@@ -190,6 +191,9 @@ public class Sign {
 
     /**
      * 构建参与签名的HTTP头
+     * <pre>
+     * 传入的Headers必须将默认的ISO-8859-1转换为UTF-8以支持中文
+     * </pre>
      *
      * @param headers HTTP请求头
      * @return 所有参与签名计算的HTTP请求头
