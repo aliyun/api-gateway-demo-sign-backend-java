@@ -205,8 +205,7 @@ public class Sign {
 
         if (headersToSignString != null) {
             for (String headerKey : headersToSignString.split("\\,")) {
-                headerKey = HTTP_HEADER_TO_LOWER_CASE ? headerKey.toLowerCase() : headerKey;
-                headersToSignMap.put(headerKey, headers.get(headerKey));
+                headersToSignMap.put(headerKey, headers.get(HTTP_HEADER_TO_LOWER_CASE ? headerKey.toLowerCase() : headerKey));
             }
         }
 
