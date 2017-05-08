@@ -55,7 +55,7 @@ public class Sign {
     //HTTP PUT
     private static final String HTTP_METHOD_PUT = "put";
     //HTTP HEADER是否转换成小写（部分WEB容器中接受到的所有HEADER的KEY都是小写）
-    private static final boolean HTTP_HEADER_TO_LOWER_CASE = true;
+    private static final boolean HTTP_HEADER_TO_LOWER_CASE = false;
 
     //签名密钥Map,用于存储多对服务端签名计算密钥,一旦正在使用的密钥泄露,只需要将密钥列表中的其他密钥配置到网关即可进行密钥热替换
     private static Map<String, String> signSecretMap = new HashMap<String, String>();
@@ -77,7 +77,7 @@ public class Sign {
         String uri = "/demo/uri";
         String httpMethod = "POST";
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(CA_PROXY_SIGN, "vYpUZCP7O+xF0Ynumi8+O8GV3JveCA32nEXLucpf+QQ=");
+        headers.put(CA_PROXY_SIGN, "C7Lqfn8Spz0DxQTfUJq0NrkEbwNUuTNtC9p3SzRWgv0=");
         headers.put(CA_PROXY_SIGN_HEADERS, "HeaderKey1,HeaderKey2");
         headers.put(CA_PROXY_SIGN_SECRET_KEY, "DemoKey1");
         headers.put("HeaderKey1", "HeaderValue1");
