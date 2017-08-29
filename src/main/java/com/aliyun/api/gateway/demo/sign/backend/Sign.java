@@ -78,7 +78,7 @@ public class Sign {
         String httpMethod = "POST";
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(CA_PROXY_SIGN, "C7Lqfn8Spz0DxQTfUJq0NrkEbwNUuTNtC9p3SzRWgv0=");
-        headers.put(CA_PROXY_SIGN_HEADERS, "HeaderKey1,HeaderKey2");
+        headers.put(CA_PROXY_SIGN_HEADERS, "HeaderKey1,HeaderKey2");//注意此处设置的是Demo,实际运行时,参与签名的Header需要从X-Ca-Proxy-Signature-Headers动态读取
         headers.put(CA_PROXY_SIGN_SECRET_KEY, "DemoKey1");
         headers.put("HeaderKey1", "HeaderValue1");
         headers.put("HeaderKey2", "HeaderValue2");
